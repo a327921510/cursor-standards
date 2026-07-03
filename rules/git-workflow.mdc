@@ -1,0 +1,18 @@
+---
+description: Git commit 与 Pull Request 规范
+alwaysApply: true
+---
+
+# Git 工作流规范
+
+## Commit
+- 一个逻辑改动一个 commit，避免把不相关改动混在一起。
+- Commit message 采用 Conventional Commits：`type(scope): summary`
+  - 常用 type：`feat` / `fix` / `docs` / `refactor` / `test` / `chore`。
+  - summary 用祈使句、简洁描述「做了什么」。
+- 不要 force push、不要 amend 已推送的历史，除非用户明确要求。
+
+## Pull Request
+- PR 标题遵循同样的 Conventional Commits 风格。
+- PR 描述包含：变更概述、动机、验证方式（如何测试）。
+- 保持 PR 聚焦单一主题，便于 review。

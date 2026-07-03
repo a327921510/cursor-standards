@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+# cursor-std — universal, language-agnostic distributor for Cursor Rules & Skills.
+#
+# Distribution model: copy + .standards-lock.json + clean sync + integrity manifest.
+# Zero runtime deps beyond bash, git and coreutils (sha256sum/shasum).
+set -euo pipefail
+
+# Locate this script's repo root (the cursor-standards checkout), following one
+# symlink level so a symlinked `cursor-std` on PATH still finds lib/.
+_src="${BASH_SOURCE[0]}"
+if [ -L "$_src" ]; then
+  _link="$(readlink "$_src")"
+  case "$_link" in
+    /*) _src="$_link" ;;
+    *)  _src="$(dirname "$_src")/$_link" ;;
+  esac
+fi
+CURSOR_STD_BIN_DIR="$(cd "$(dirname "$_src")" && pwd)"
+CURSOR_STD_SELF_ROOT="$(cd "$CURSOR_STD_BIN_DIR/.." && pwd)"
+LIB_DIR="$CURSOR_STD_SELF_ROOT/lib"
+
+# shellcheck source=lib/common.sh
+. "$LIB_DIR/common.sh"
+
+usage() {
+  cat >&2 <<EOF
+cursor-std $CLI_VERSION — distribute Cursor Rules & Skills across any project.
+
+USAGE:
+  cursor-std <command> [target] [options]
+
+COMMANDS:
+  install [target]   Sync rules/skills into <target>/.cursor + write lock (default target: .)
+  check   [target]   Compare installed version with the latest available (exit 1 if outdated)
+  update  [target]   Fetch latest and re-install
+  verify  [target]   Check managed files against the integrity manifest (exit 4 on drift)
+  init    [target]   install + wire the sessionStart upgrade-reminder hook (non-destructive)
+  version            Print CLI and standards versions
+  help               Show this help
+
+OPTIONS:
+  --source <dir>     Standards checkout to install from (overrides \$STANDARDS_HOME / self)
+  --version <ver>    Pin to a git tag/version (e.g. --version 1.2.0)
+  --commit <sha>     Pin to a specific commit
+  --global           Install into \$HOME/.cursor (user-level, all projects)
+  --mode <copy>      Install mode (only 'copy' supported today)
+
+ENVIRONMENT:
+  STANDARDS_HOME     Path to a local cursor-standards clone (enables offline use)
+  STANDARDS_REPO     Remote URL used by 'check' when no lock/source is available
+
+EXAMPLES:
+  export STANDARDS_HOME=~/dev/cursor-standards
+  cursor-std install /path/to/my-app
+  cursor-std check   /path/to/my-app        # exit 1 if a newer version exists
+  cursor-std update  /path/to/my-app
+  cursor-std install /path/to/my-app --version 1.2.0
+EOF
+}
+
+cmd_version() {
+  printf 'cursor-std (CLI):   %s\n' "$CLI_VERSION"
+  if [ -f "$CURSOR_STD_SELF_ROOT/VERSION" ]; then
+    printf 'standards (source): %s\n' "$(tr -d ' \t\r\n' < "$CURSOR_STD_SELF_ROOT/VERSION")"
+  fi
+}
+
+# --- argument parsing -------------------------------------------------------
+OPT_SOURCE=""; OPT_VERSION=""; OPT_COMMIT=""; OPT_MODE="copy"; OPT_GLOBAL=0
+POSITIONAL=()
+
+[ $# -ge 1 ] || { usage; exit 2; }
+COMMAND="$1"; shift
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --source)  OPT_SOURCE="${2:-}"; shift 2 ;;
+    --source=*) OPT_SOURCE="${1#*=}"; shift ;;
+    --version) OPT_VERSION="${2:-}"; shift 2 ;;
+    --version=*) OPT_VERSION="${1#*=}"; shift ;;
+    --commit)  OPT_COMMIT="${2:-}"; shift 2 ;;
+    --commit=*) OPT_COMMIT="${1#*=}"; shift ;;
+    --mode)    OPT_MODE="${2:-}"; shift 2 ;;
+    --mode=*)  OPT_MODE="${1#*=}"; shift ;;
+    --global)  OPT_GLOBAL=1; shift ;;
+    -h|--help) usage; exit 0 ;;
+    --) shift; while [ $# -gt 0 ]; do POSITIONAL+=("$1"); shift; done ;;
+    -*) die "unknown option: $1" ;;
+    *)  POSITIONAL+=("$1"); shift ;;
+  esac
+done
+export OPT_SOURCE OPT_VERSION OPT_COMMIT OPT_MODE OPT_GLOBAL CURSOR_STD_SELF_ROOT
+
+# --global rewrites the target to $HOME (unless one was given explicitly).
+target_arg="${POSITIONAL[0]:-}"
+if [ "$OPT_GLOBAL" -eq 1 ] && [ -z "$target_arg" ]; then
+  target_arg="$HOME"
+fi
+
+case "$COMMAND" in
+  install) . "$LIB_DIR/install.sh"; cmd_install "${target_arg:-.}" ;;
+  check)   . "$LIB_DIR/check.sh";   cmd_check   "${target_arg:-.}" ;;
+  update)  . "$LIB_DIR/check.sh"; . "$LIB_DIR/install.sh"; . "$LIB_DIR/update.sh"; cmd_update "${target_arg:-.}" ;;
+  verify)  . "$LIB_DIR/verify.sh";  cmd_verify  "${target_arg:-.}" ;;
+  init)    . "$LIB_DIR/install.sh"; . "$LIB_DIR/init.sh"; cmd_init "${target_arg:-.}" ;;
+  version|--version) cmd_version ;;
+  help|-h|--help) usage ;;
+  *) err "unknown command: $COMMAND"; usage; exit 2 ;;
+esac

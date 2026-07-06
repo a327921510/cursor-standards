@@ -34,6 +34,7 @@ COMMANDS:
   check   [target]   Compare installed version with the latest available (exit 1 if outdated)
   update  [target]   Fetch latest and re-install
   verify  [target]   Check managed files against the integrity manifest (exit 4 on drift)
+  remove  [target]   Uninstall: delete managed subtrees + lock (keeps local.mdc & hooks)
   init    [target]   install + wire the sessionStart upgrade-reminder hook (non-destructive)
   version            Print CLI and standards versions
   help               Show this help
@@ -102,6 +103,7 @@ case "$COMMAND" in
   check)   . "$LIB_DIR/check.sh";   cmd_check   "${target_arg:-.}" ;;
   update)  . "$LIB_DIR/check.sh"; . "$LIB_DIR/install.sh"; . "$LIB_DIR/update.sh"; cmd_update "${target_arg:-.}" ;;
   verify)  . "$LIB_DIR/verify.sh";  cmd_verify  "${target_arg:-.}" ;;
+  remove)  . "$LIB_DIR/remove.sh";  cmd_remove  "${target_arg:-.}" ;;
   init)    . "$LIB_DIR/install.sh"; . "$LIB_DIR/init.sh"; cmd_init "${target_arg:-.}" ;;
   version|--version) cmd_version ;;
   help|-h|--help) usage ;;

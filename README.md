@@ -38,10 +38,11 @@ cursor-standards/
 ├── install.sh             # 把 cursor-std 链接到 PATH
 ├── bin/cursor-std         # CLI 入口
 ├── lib/                   # install / check / update / verify / init / common
-├── rules/                 # 下发的 .mdc 规则
+├── rules/                 # 下发的 .mdc 规则（统一 std- 前缀）
 ├── skills/                # 下发的 SKILL.md 技能
 ├── templates/             # hooks.json + hooks/check-standards.sh
 ├── tests/                 # 冒烟测试（纯 bash）
+├── .github/workflows/     # ci（smoke）+ release-check（VERSION==tag）
 └── docs/                  # 使用指南、评审、待确认问题
 ```
 

@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+### Added
+- `cursor-std remove [目标]`：卸载受管子目录与 lock，保留 `local.mdc` 与 hooks（Q6）。
+- CI：`.github/workflows/ci.yml`（ubuntu/macos 跑 smoke 测试）与 `release-check.yml`（发版时断言 `VERSION == tag`，Q8）。
+
+### Changed
+- 下发规则文件统一加 `std-` 前缀（`std-general.mdc` / `std-git-workflow.mdc` / `std-python.mdc` / `std-typescript.mdc`），避免与项目本地规则重名、`@` 引用歧义（Q7）。
+
 ## [0.1.0] - 2026-07-03
 
 ### Added

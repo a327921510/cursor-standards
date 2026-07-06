@@ -19,7 +19,7 @@ export STANDARDS_HOME="$REPO_ROOT"
 echo "== install =="
 "$CLI" install "$PROJ" >/dev/null 2>&1
 check "lock file created"            "[ -f '$PROJ/.cursor/.standards-lock.json' ]"
-check "general.mdc installed"        "[ -f '$PROJ/.cursor/rules/standards/general.mdc' ]"
+check "std-general.mdc installed"    "[ -f '$PROJ/.cursor/rules/standards/std-general.mdc' ]"
 check "skill installed"              "[ -f '$PROJ/.cursor/skills/standards/commit-helper/SKILL.md' ]"
 check "manifest present in lock"     "grep -q 'sha256:' '$PROJ/.cursor/.standards-lock.json'"
 check "version recorded"             "grep -q '\"version\"' '$PROJ/.cursor/.standards-lock.json'"
@@ -40,9 +40,18 @@ touch "$PROJ/.cursor/rules/standards/orphan.mdc"
 check "orphan removed by clean sync" "[ ! -f '$PROJ/.cursor/rules/standards/orphan.mdc' ]"
 
 echo "== verify (tamper) =="
-echo "hand edit" >> "$PROJ/.cursor/rules/standards/general.mdc"
+echo "hand edit" >> "$PROJ/.cursor/rules/standards/std-general.mdc"
 if "$CLI" verify "$PROJ" >/dev/null 2>&1; then tfail "verify should detect tampering"; else tpass "verify detects tampering"; fi
 "$CLI" install "$PROJ" >/dev/null 2>&1   # restore
+
+echo "== remove =="
+printf -- '---\nalwaysApply: true\n---\nlocal\n' > "$PROJ/.cursor/rules/local.mdc"
+"$CLI" remove "$PROJ" >/dev/null 2>&1
+check "standards rules removed"      "[ ! -d '$PROJ/.cursor/rules/standards' ]"
+check "standards skills removed"     "[ ! -d '$PROJ/.cursor/skills/standards' ]"
+check "lock removed"                 "[ ! -f '$PROJ/.cursor/.standards-lock.json' ]"
+check "local.mdc preserved on remove" "[ -f '$PROJ/.cursor/rules/local.mdc' ]"
+"$CLI" install "$PROJ" >/dev/null 2>&1   # restore for later sections
 
 echo "== pin by tag (if any tag exists) =="
 if git -C "$REPO_ROOT" describe --tags --abbrev=0 >/dev/null 2>&1; then

@@ -1,0 +1,25 @@
+name: release-check
+
+# Asserts that the VERSION file matches the pushed git tag. Tag is the single
+# source of truth; VERSION is its mirror. A mismatch fails the release.
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  version-matches-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assert VERSION == tag
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          file="$(tr -d ' \t\r\n' < VERSION)"
+          file="${file#v}"
+          echo "tag=$tag  VERSION=$file"
+          if [ "$tag" != "$file" ]; then
+            echo "::error::VERSION ($file) does not match tag ($tag). Update VERSION before tagging."
+            exit 1
+          fi
+          echo "OK: VERSION matches tag."

@@ -5,6 +5,9 @@
 ## [Unreleased]
 
 ### Added
+- 新增两条常驻规则（`alwaysApply: true`，语言无关）：
+  - `std-readability.mdc`：可读性优先——避免过度封装、控制调用深度（≤3 层）、拆分门槛，以及「可读优先、性能其次」并保留性能例外条款。
+  - `std-comments.mdc`：面向 AI 生成代码的注释规范——必须注释项、详细程度门槛、无废话红线与反例/正例；正文中文、术语英文。
 - `cursor-std remove [目标]`：卸载受管子目录与 lock，保留 `local.mdc` 与 hooks（Q6）。
 - CI：`.github/workflows/ci.yml`（ubuntu/macos 跑 smoke 测试）与 `release-check.yml`（发版时断言 `VERSION == tag`，Q8）。
 

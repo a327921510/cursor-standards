@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh — bootstrap the cursor-std CLI onto your PATH.
+# install.sh — bootstrap the cursor-std CLI onto your PATH (macOS / Linux).
 #
 # Recommended usage (safe: clone first, then run locally — no curl|bash):
 #   git clone <cursor-standards repo> ~/dev/cursor-standards
@@ -7,6 +7,8 @@
 #
 # Creates a symlink to bin/cursor-std in a PATH directory. Override with:
 #   BIN_DIR=/usr/local/bin ./install.sh
+#
+# Windows (Git Bash): use ./install-windows.sh instead.
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

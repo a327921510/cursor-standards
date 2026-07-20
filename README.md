@@ -15,7 +15,9 @@
 ```bash
 # 1. 克隆本仓库并把 CLI 装到 PATH
 git clone <this-repo> ~/dev/cursor-standards
-cd ~/dev/cursor-standards && ./install.sh
+cd ~/dev/cursor-standards
+./install.sh              # macOS / Linux
+# ./install-windows.sh    # Windows：请在 Git Bash 中运行
 export STANDARDS_HOME=~/dev/cursor-standards   # 建议写入 shell profile
 
 # 2. 在任意项目中安装规范
@@ -29,13 +31,21 @@ cursor-std update /path/to/my-app
 cursor-std init   /path/to/my-app
 ```
 
+| 系统 | 安装命令 |
+|------|----------|
+| macOS / Linux | `./install.sh` |
+| Windows（Git Bash） | `./install-windows.sh` |
+
+Windows 路径写成 `/d/project/...`，不要用 PowerShell / 系统自带的 `bash.exe`。详见 [`docs/使用指南.md`](docs/使用指南.md) §1。
+
 ## 仓库结构
 
 ```
 cursor-standards/
 ├── VERSION                # 版本号（发版时与 git tag 对齐）
 ├── CHANGELOG.md
-├── install.sh             # 把 cursor-std 链接到 PATH
+├── install.sh             # macOS / Linux：软链到 PATH
+├── install-windows.sh     # Windows（Git Bash）：写 wrapper 到 PATH
 ├── bin/cursor-std         # CLI 入口
 ├── lib/                   # install / check / update / verify / init / common
 ├── rules/                 # 下发的 .mdc 规则（统一 std- 前缀）

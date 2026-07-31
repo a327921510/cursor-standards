@@ -20,7 +20,10 @@ echo "== install =="
 "$CLI" install "$PROJ" >/dev/null 2>&1
 check "lock file created"            "[ -f '$PROJ/.cursor/.standards-lock.json' ]"
 check "std-general.mdc installed"    "[ -f '$PROJ/.cursor/rules/standards/std-general.mdc' ]"
+check "std-req-workflow.mdc installed" "[ -f '$PROJ/.cursor/rules/standards/std-req-workflow.mdc' ]"
 check "skill installed"              "[ -f '$PROJ/.cursor/skills/standards/commit-helper/SKILL.md' ]"
+check "req-workflow skill installed" "[ -f '$PROJ/.cursor/skills/standards/req-workflow/WORKFLOW.md' ]"
+check "implement-req skill installed" "[ -f '$PROJ/.cursor/skills/standards/implement-req/SKILL.md' ]"
 check "manifest present in lock"     "grep -q 'sha256:' '$PROJ/.cursor/.standards-lock.json'"
 check "version recorded"             "grep -q '\"version\"' '$PROJ/.cursor/.standards-lock.json'"
 
@@ -52,6 +55,33 @@ check "standards skills removed"     "[ ! -d '$PROJ/.cursor/skills/standards' ]"
 check "lock removed"                 "[ ! -f '$PROJ/.cursor/.standards-lock.json' ]"
 check "local.mdc preserved on remove" "[ -f '$PROJ/.cursor/rules/local.mdc' ]"
 "$CLI" install "$PROJ" >/dev/null 2>&1   # restore for later sections
+
+echo "== configure-req =="
+DOCS="$WORK/docs"; APP="$WORK/app"; BOSS="$WORK/boss"
+mkdir -p "$DOCS" "$APP" "$BOSS"
+"$CLI" configure-req "$PROJ" \
+  --doc-root "$DOCS" \
+  --repo "app=$APP" \
+  --repo "boss=$BOSS" \
+  --seed-docs >/dev/null 2>&1
+check "req-workflow.local.mdc written"   "[ -f '$PROJ/.cursor/rules/req-workflow.local.mdc' ]"
+check "seeded REQ-index"                 "[ -f '$DOCS/backlog/REQ-index.md' ]"
+check "seeded changelog"                 "[ -f '$DOCS/changelog.md' ]"
+# reinstall must not wipe local REQ config
+"$CLI" install "$PROJ" >/dev/null 2>&1
+check "configure-req survives reinstall" "[ -f '$PROJ/.cursor/rules/req-workflow.local.mdc' ]"
+# without --force should fail
+if "$CLI" configure-req "$PROJ" --doc-root "$DOCS" --repo "app=$APP" >/dev/null 2>&1; then
+  tfail "configure-req should refuse overwrite without --force"
+else
+  tpass "configure-req refuses overwrite without --force"
+fi
+"$CLI" configure-req "$PROJ" --doc-root "$DOCS" --repo "app=$APP" --force >/dev/null 2>&1
+check "configure-req --force works"      "[ -f '$PROJ/.cursor/rules/req-workflow.local.mdc' ]"
+# remove keeps local REQ config
+"$CLI" remove "$PROJ" >/dev/null 2>&1
+check "req-workflow.local.mdc kept on remove" "[ -f '$PROJ/.cursor/rules/req-workflow.local.mdc' ]"
+"$CLI" install "$PROJ" >/dev/null 2>&1
 
 echo "== pin by tag (if any tag exists) =="
 if git -C "$REPO_ROOT" describe --tags --abbrev=0 >/dev/null 2>&1; then

@@ -30,21 +30,30 @@ USAGE:
   cursor-std <command> [target] [options]
 
 COMMANDS:
-  install [target]   Sync rules/skills into <target>/.cursor + write lock (default target: .)
-  check   [target]   Compare installed version with the latest available (exit 1 if outdated)
-  update  [target]   Fetch latest and re-install
-  verify  [target]   Check managed files against the integrity manifest (exit 4 on drift)
-  remove  [target]   Uninstall: delete managed subtrees + lock (keeps local.mdc & hooks)
-  init    [target]   install + wire the sessionStart upgrade-reminder hook (non-destructive)
-  version            Print CLI and standards versions
-  help               Show this help
+  install       [target]   Sync rules/skills into <target>/.cursor + write lock (default target: .)
+  check         [target]   Compare installed version with the latest available (exit 1 if outdated)
+  update        [target]   Fetch latest and re-install
+  verify        [target]   Check managed files against the integrity manifest (exit 4 on drift)
+  remove        [target]   Uninstall: delete managed subtrees + lock (keeps local.mdc & hooks)
+  init          [target]   install + wire the sessionStart upgrade-reminder hook (non-destructive)
+  configure-req [target]   Write REQ workflow local paths (.cursor/rules/req-workflow.local.mdc)
+  version                  Print CLI and standards versions
+  help                     Show this help
 
-OPTIONS:
+OPTIONS (install / check / update / …):
   --source <dir>     Standards checkout to install from (overrides \$STANDARDS_HOME / self)
   --version <ver>    Pin to a git tag/version (e.g. --version 1.2.0)
   --commit <sha>     Pin to a specific commit
   --global           Install into \$HOME/.cursor (user-level, all projects)
   --mode <copy>      Install mode (only 'copy' supported today)
+
+OPTIONS (configure-req):
+  --doc-root <dir>           Absolute path to the documentation root (required)
+  --repo <label>=<dir>       Code repo (repeatable; at least one required)
+  --feature-doc <relpath>    Feature-truth doc relative to doc-root (default: 项目功能需求文档.md)
+  --changelog <relpath>      Changelog relative to doc-root (default: changelog.md)
+  --seed-docs                Copy backlog/changelog stubs into doc-root (skip if exists)
+  --force                    Overwrite existing req-workflow.local.mdc
 
 ENVIRONMENT:
   STANDARDS_HOME     Path to a local cursor-standards clone (enables offline use)
@@ -53,6 +62,11 @@ ENVIRONMENT:
 EXAMPLES:
   export STANDARDS_HOME=~/dev/cursor-standards
   cursor-std install /path/to/my-app
+  cursor-std configure-req /path/to/my-app \\
+    --doc-root /path/to/docs \\
+    --repo app=/path/to/app \\
+    --repo boss=/path/to/boss \\
+    --seed-docs
   cursor-std check   /path/to/my-app        # exit 1 if a newer version exists
   cursor-std update  /path/to/my-app
   cursor-std install /path/to/my-app --version 1.2.0
@@ -68,6 +82,9 @@ cmd_version() {
 
 # --- argument parsing -------------------------------------------------------
 OPT_SOURCE=""; OPT_VERSION=""; OPT_COMMIT=""; OPT_MODE="copy"; OPT_GLOBAL=0
+OPT_DOC_ROOT=""; OPT_FEATURE_DOC=""; OPT_CHANGELOG=""
+OPT_SEED_DOCS=0; OPT_FORCE=0
+OPT_REPOS=()
 POSITIONAL=()
 
 [ $# -ge 1 ] || { usage; exit 2; }
@@ -84,6 +101,16 @@ while [ $# -gt 0 ]; do
     --mode)    OPT_MODE="${2:-}"; shift 2 ;;
     --mode=*)  OPT_MODE="${1#*=}"; shift ;;
     --global)  OPT_GLOBAL=1; shift ;;
+    --doc-root)  OPT_DOC_ROOT="${2:-}"; shift 2 ;;
+    --doc-root=*) OPT_DOC_ROOT="${1#*=}"; shift ;;
+    --repo)  OPT_REPOS+=("${2:-}"); shift 2 ;;
+    --repo=*) OPT_REPOS+=("${1#*=}"); shift ;;
+    --feature-doc)  OPT_FEATURE_DOC="${2:-}"; shift 2 ;;
+    --feature-doc=*) OPT_FEATURE_DOC="${1#*=}"; shift ;;
+    --changelog)  OPT_CHANGELOG="${2:-}"; shift 2 ;;
+    --changelog=*) OPT_CHANGELOG="${1#*=}"; shift ;;
+    --seed-docs) OPT_SEED_DOCS=1; shift ;;
+    --force) OPT_FORCE=1; shift ;;
     -h|--help) usage; exit 0 ;;
     --) shift; while [ $# -gt 0 ]; do POSITIONAL+=("$1"); shift; done ;;
     -*) die "unknown option: $1" ;;
@@ -91,6 +118,8 @@ while [ $# -gt 0 ]; do
   esac
 done
 export OPT_SOURCE OPT_VERSION OPT_COMMIT OPT_MODE OPT_GLOBAL CURSOR_STD_SELF_ROOT
+export OPT_DOC_ROOT OPT_FEATURE_DOC OPT_CHANGELOG OPT_SEED_DOCS OPT_FORCE
+# OPT_REPOS is an array — export does not preserve arrays; configure-req reads it in-process.
 
 # --global rewrites the target to $HOME (unless one was given explicitly).
 target_arg="${POSITIONAL[0]:-}"
@@ -105,6 +134,7 @@ case "$COMMAND" in
   verify)  . "$LIB_DIR/verify.sh";  cmd_verify  "${target_arg:-.}" ;;
   remove)  . "$LIB_DIR/remove.sh";  cmd_remove  "${target_arg:-.}" ;;
   init)    . "$LIB_DIR/install.sh"; . "$LIB_DIR/init.sh"; cmd_init "${target_arg:-.}" ;;
+  configure-req) . "$LIB_DIR/configure-req.sh"; cmd_configure_req "${target_arg:-.}" ;;
   version|--version) cmd_version ;;
   help|-h|--help) usage ;;
   *) err "unknown command: $COMMAND"; usage; exit 2 ;;

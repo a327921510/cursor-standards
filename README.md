@@ -6,7 +6,7 @@
 - **通用安装**：任意项目（Python / Node / Go / 混合）通过 `cursor-std` 一键同步，零运行时依赖（bash + git + coreutils）。
 - **版本可追溯**：每次安装写入 `.standards-lock.json`（含 version / commit / 完整性 manifest）。
 - **升级可提醒**：`check` 命令 + sessionStart hook。
-- **分层共存**：中央规范放 `.cursor/rules/standards/`，项目本地规则放 `.cursor/rules/local.mdc`，互不干扰。
+- **分层共存**：中央规范放 `.cursor/rules/standards/`；项目本地放 `local.mdc`；REQ 路径放 `req-workflow.local.mdc`（`configure-req`），互不干扰。
 
 分发机制：**copy + `.standards-lock.json` + clean sync + manifest**。
 
@@ -29,6 +29,13 @@ cursor-std update /path/to/my-app
 
 # 4. 首次接入（顺带写入升级提醒 hook）
 cursor-std init   /path/to/my-app
+
+# 5. （可选）接入 REQ 文档驱动工作流：配置文档根与代码仓路径
+cursor-std configure-req /path/to/my-app \
+  --doc-root /path/to/docs \
+  --repo app=/path/to/app \
+  --repo boss=/path/to/boss \
+  --seed-docs
 ```
 
 | 系统 | 安装命令 |
@@ -49,12 +56,12 @@ cursor-standards/
 ├── bin/cursor-std         # CLI 入口
 ├── lib/                   # install / check / update / verify / init / common
 ├── rules/                 # 下发的 .mdc 规则（统一 std- 前缀）
-├── skills/                # 下发的 SKILL.md 技能
-├── templates/             # hooks.json + hooks/check-standards.sh
+├── skills/                # 下发的 SKILL.md 技能（含 REQ 工作流）
+├── templates/             # hooks + req-workflow.local.mdc.tpl
 ├── tests/                 # 冒烟测试（纯 bash）
 ├── .github/workflows/     # ci（smoke）+ release-check（VERSION==tag）
 └── docs/                  # 使用指南、评审、待确认问题
 ```
 
-详细命令与用法见 [`docs/使用指南.md`](docs/使用指南.md)。
+详细命令与用法见 [`docs/使用指南.md`](docs/使用指南.md)（含「接入 REQ 文档驱动工作流」）。
 需求、评审、设计决策与实现对照见 [`docs/设计文档.md`](docs/设计文档.md)。

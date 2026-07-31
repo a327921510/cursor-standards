@@ -5,6 +5,10 @@
 ## [Unreleased]
 
 ### Added
+- **REQ 文档驱动工作流**（从业务项目工作流抽离的通用包）：
+  - 规则 `std-req-workflow.mdc`（摘要，`alwaysApply`）。
+  - Skills：`req-workflow`（总览 + `WORKFLOW.md` + backlog/changelog assets）、`req-register`、`implement-req`、`sync-req-docs`。
+  - 新命令 `cursor-std configure-req`：由用户提供 `--doc-root` / `--repo label=path`，写入不受 clean sync 覆盖的 `.cursor/rules/req-workflow.local.mdc`；可选 `--seed-docs` 初始化台账 stub、`--force` 覆盖已有配置。
 - 新增两条常驻规则（`alwaysApply: true`，语言无关）：
   - `std-readability.mdc`：可读性优先——避免过度封装、控制调用深度（≤3 层）、拆分门槛，以及「可读优先、性能其次」并保留性能例外条款。
   - `std-comments.mdc`：面向 AI 生成代码的注释规范——必须注释项、详细程度门槛、无废话红线与反例/正例；正文中文、术语英文。

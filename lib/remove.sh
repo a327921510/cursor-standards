@@ -24,7 +24,7 @@ cmd_remove() {
   rmdir "$cursor_dir/rules"  2>/dev/null || true
   rmdir "$cursor_dir/skills" 2>/dev/null || true
 
-  warn "hooks (.cursor/hooks.json, .cursor/hooks/) and local.mdc were left untouched."
-  log  "  remove them manually if you no longer want the upgrade reminder."
+  warn "hooks, local.mdc, and req-workflow.local.mdc were left untouched."
+  log  "  remove them manually if you no longer want the upgrade reminder / REQ paths."
   ok "Done."
 }

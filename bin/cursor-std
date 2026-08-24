@@ -70,6 +70,7 @@ EXAMPLES:
   cursor-std check   /path/to/my-app        # exit 1 if a newer version exists
   cursor-std update  /path/to/my-app
   cursor-std install /path/to/my-app --version 1.2.0
+  cursor-std install /path/to/my-app --version 0.2.0-test.1   # 测试 tag（可省略 v 前缀）
 EOF
 }
 

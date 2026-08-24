@@ -15,6 +15,19 @@ materialize_ref() {
   printf '%s\n' "$tmp"
 }
 
+# resolve_version_ref <src> <requested> — map a version string to a local git
+# ref. Accepts "1.2.0" or "v1.2.0". Prints the resolvable ref; exit 1 if none.
+resolve_version_ref() {
+  local src="$1" req="$2" cand
+  for cand in "$req" "v${req#v}" "${req#v}"; do
+    if git -C "$src" rev-parse --verify "${cand}^{commit}" >/dev/null 2>&1; then
+      printf '%s\n' "$cand"
+      return 0
+    fi
+  done
+  return 1
+}
+
 # build_manifest_json <cursor_dir> — emit the "manifest" object body (entries
 # only, no braces) mapping paths (relative to .cursor/) to sha256 digests.
 build_manifest_json() {
@@ -40,17 +53,30 @@ cmd_install() {
 
   # Decide content source: pinned ref (via git archive) or the working tree.
   local content_src="$STANDARDS_ROOT" ref="" pinned_tmp="" version commit dirty
-  if [ -n "${OPT_VERSION:-}" ]; then ref="$OPT_VERSION"; fi
+
+  # Pinning needs remote tags/commits in the local source clone.
+  if { [ -n "${OPT_VERSION:-}" ] || [ -n "${OPT_COMMIT:-}" ]; } \
+     && git -C "$STANDARDS_ROOT" rev-parse --git-dir >/dev/null 2>&1; then
+    info "Fetching tags from source remote (for --version/--commit pin)"
+    if ! git -C "$STANDARDS_ROOT" fetch --tags --quiet 2>/dev/null; then
+      warn "git fetch failed (offline?); resolving pin from local refs only"
+    fi
+  fi
+
+  if [ -n "${OPT_VERSION:-}" ]; then
+    ref="$(resolve_version_ref "$STANDARDS_ROOT" "$OPT_VERSION")" \
+      || die "cannot resolve --version '$OPT_VERSION' in $STANDARDS_ROOT (need tag like v${OPT_VERSION#v}; run: git -C \"\$STANDARDS_HOME\" fetch --tags)"
+  fi
   if [ -n "${OPT_COMMIT:-}" ]; then ref="$OPT_COMMIT"; fi
 
   if [ -n "$ref" ]; then
     pinned_tmp="$(materialize_ref "$STANDARDS_ROOT" "$ref")"
     content_src="$pinned_tmp"
     commit="$(git -C "$STANDARDS_ROOT" rev-parse "${ref}^{commit}" 2>/dev/null || echo unknown)"
-    if [ -n "${OPT_VERSION:-}" ]; then
-      version="${OPT_VERSION#v}"
-    elif [ -f "$content_src/VERSION" ]; then
+    if [ -f "$content_src/VERSION" ]; then
       version="$(tr -d ' \t\r\n' < "$content_src/VERSION")"; version="${version#v}"
+    elif [ -n "${OPT_VERSION:-}" ]; then
+      version="${OPT_VERSION#v}"
     else
       version="0.0.0"
     fi

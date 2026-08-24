@@ -16,6 +16,7 @@
 - CI：`.github/workflows/ci.yml`（ubuntu/macos 跑 smoke 测试）与 `release-check.yml`（发版时断言 `VERSION == tag`，Q8）。
 
 ### Changed
+- `install --version`：pin 前自动 `fetch --tags`，并兼容带/不带 `v` 前缀的版本号（便于消费测试 tag，如 `0.2.0-test.1`）。
 - 下发规则文件统一加 `std-` 前缀（`std-general.mdc` / `std-git-workflow.mdc` / `std-python.mdc` / `std-typescript.mdc`），避免与项目本地规则重名、`@` 引用歧义（Q7）。
 - `commit-helper` skill 升级为**通用版**：不再绑定特定项目结构，type/scope/语言风格从当前仓库自适应推断（探测 commitlint / `.gitmessage` / `git log` 历史）。
   - 覆盖完整 Conventional Commits type 集合（含 `perf` / `build` / `ci` / `revert`）；澄清 `style` 仅指代码格式、UI 视觉改动归 `feat`/`fix`；补充 Breaking Change 与 `Closes #123` footer。

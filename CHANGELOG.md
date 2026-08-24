@@ -16,6 +16,10 @@
 - CI：`.github/workflows/ci.yml`（ubuntu/macos 跑 smoke 测试）与 `release-check.yml`（发版时断言 `VERSION == tag`，Q8）。
 
 ### Changed
+- `std-readability.mdc`：新增「主流程可扫读」——唯一编排入口、流程地图（stage 1→N）、stage 命名约定；弹层/overlay 同样要薄入口；禁止为测试硬拆函数。
+- `std-comments.mdc`：编排入口须写流程地图；主流程用 `// --- stageName ---` 分段（与地图/日志同名）；补支付示例。
+- `implement-req`：实现主路径时补流程地图；结束简报强制含入口路径、stage 表、新增文件数、调用深度。
+- `std-req-workflow.mdc`、`req-workflow` 口令模板 B：与上述简报字段对齐。
 - 下发规则文件统一加 `std-` 前缀（`std-general.mdc` / `std-git-workflow.mdc` / `std-python.mdc` / `std-typescript.mdc`），避免与项目本地规则重名、`@` 引用歧义（Q7）。
 - `commit-helper` skill 升级为**通用版**：不再绑定特定项目结构，type/scope/语言风格从当前仓库自适应推断（探测 commitlint / `.gitmessage` / `git log` 历史）。
   - 覆盖完整 Conventional Commits type 集合（含 `perf` / `build` / `ci` / `revert`）；澄清 `style` 仅指代码格式、UI 视觉改动归 `feat`/`fix`；补充 Breaking Change 与 `Closes #123` footer。

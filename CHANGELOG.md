@@ -4,6 +4,21 @@
 
 ## [Unreleased]
 
+## [0.2.0-test.3] - 2026-08-26
+
+> **测试版本**（分支 `test1`，tag `v0.2.0-test.3`）。  
+> 其他项目：`cursor-std install <目标> --version 0.2.0-test.3`
+
+### Added
+- Skill `add-e2e-test`：主路径定稿后按 stage 补页面 E2E / `data-testid`；含**小程序自动化占位**（不生成驱动）。
+- `std-typescript.mdc`：单测与 E2E / testid / 小程序占位约定。
+- REQ 模板「自动化」表；`使用指南` §5.2.1；smoke 校验 `add-e2e-test`。
+
+### Changed
+- `implement-req`：自动化两档（未定禁铺 / 定稿可补）；简报含 E2E、小程序、单测状态。
+- `req-workflow` / `WORKFLOW.md`：步骤 ②′ 与口令「主路径已定，补 E2E」；区分 E2E vs 人工详测。
+- `std-req-workflow` / `std-comments` / `sync-req-docs`：与上述对齐。
+
 ## [0.2.0-test.2] - 2026-08-24
 
 > **测试版本**（分支 `test1`，tag `v0.2.0-test.2`）。  

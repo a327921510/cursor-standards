@@ -24,6 +24,7 @@ check "std-req-workflow.mdc installed" "[ -f '$PROJ/.cursor/rules/standards/std-
 check "skill installed"              "[ -f '$PROJ/.cursor/skills/standards/commit-helper/SKILL.md' ]"
 check "req-workflow skill installed" "[ -f '$PROJ/.cursor/skills/standards/req-workflow/WORKFLOW.md' ]"
 check "implement-req skill installed" "[ -f '$PROJ/.cursor/skills/standards/implement-req/SKILL.md' ]"
+check "add-e2e-test skill installed"  "[ -f '$PROJ/.cursor/skills/standards/add-e2e-test/SKILL.md' ]"
 check "manifest present in lock"     "grep -q 'sha256:' '$PROJ/.cursor/.standards-lock.json'"
 check "version recorded"             "grep -q '\"version\"' '$PROJ/.cursor/.standards-lock.json'"
 

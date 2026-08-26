@@ -40,7 +40,7 @@ async function submitExport(params) {
 }
 ```
 
-关键节点日志（若项目已有日志）带同一 `stage` 字段，便于搜 `createJob` 落到代码块。日后 E2E / 集成测试的定位属性前缀也用该名。不要求为每个 stage 新建函数。
+关键节点日志（若项目已有日志）带同一 `stage` 字段，便于搜 `createJob` 落到代码块。E2E / 集成测试的定位属性前缀也用该名（如 `data-testid="{feature}.{stage}"`）。**只给本条用例会点到的控件打标**，禁止全站扫。不要求为每个 stage 新建函数。
 
 ## 禁止废话注释（无废话红线）
 - 不注释变量自明的代码：`const user = getUser()` 不必写「获取用户」。

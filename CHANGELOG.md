@@ -4,6 +4,17 @@
 
 ## [Unreleased]
 
+## [0.2.0-test.4] - 2026-08-27
+
+> **测试版本**（分支 `test1`，tag `v0.2.0-test.4`）。  
+> 其他项目：`cursor-std install <目标> --version 0.2.0-test.4`
+
+### Added
+- `std-typescript.mdc`：数据转换 export 命名收敛为 `map*` / `format*` / `parse*`（含子场景与排除项）。
+
+### Changed
+- `std-comments.mdc`：重构为表格化结构；数据转换注释要求（`例：入参 → 出参`）与命名规范分离，交叉引用 `std-typescript`。
+
 ## [0.2.0-test.3] - 2026-08-26
 
 > **测试版本**（分支 `test1`，tag `v0.2.0-test.3`）。  

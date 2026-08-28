@@ -1,5 +1,5 @@
 ---
-description: 可读性优先——避免过度封装、控制调用深度、主流程可扫读（编排入口+流程地图），可读优先于性能并做好平衡
+description: 可读性优先——避免过度封装、控制调用深度、主流程可扫读、先早退再计算，可读优先于性能并做好平衡
 alwaysApply: true
 ---
 
@@ -25,6 +25,29 @@ alwaysApply: true
 - **旁路不上主地图**：次要分支、可选增强从主路径分出的能力，在地图里最多点一句，细节不进 1→N。
 - **非主入口挂载同样适用**：模态、嵌入模块、后台/全局挂载的能力也要有薄编排入口，禁止把过长编排堆进无职责的中间层或巨型共享模块。
 - **不为测试硬拆函数**：测试/日志对齐的是 stage 边界，不是「一步一个 export」；未复用的步骤用 `// --- stageName ---` 分段，留在入口内。
+
+## 先早退，再计算（声明靠近使用点）
+- **Guard 优先**：前置条件 / 幂等 / 已处理等早退写在函数前部；早退之后再做本路径才需要的计算与副作用。
+- **声明靠近使用**：仅在某一分支使用的变量，在该分支内、使用点前声明；禁止在早退检查之前「提前算好」。
+- **例外**：多个后续分支共用、或计算本身就是 guard 条件时，可提前声明。
+
+```typescript
+// ❌ 早退不用，却提前计算
+const returnPath = toRouterRelativePath(pathname, search);
+if (oauthStartedRef.current) {
+  setUi(loadingUi(…));
+  return;
+}
+startWeChatOAuthRedirect(returnPath);
+
+// ✅ 先早退，再在使用点声明
+if (oauthStartedRef.current) {
+  setUi(loadingUi(…));
+  return;
+}
+const returnPath = toRouterRelativePath(pathname, search);
+startWeChatOAuthRedirect(returnPath);
+```
 
 ## 何时才拆分
 - 同一逻辑已在 **≥2 处**分包 / 模块重复出现。

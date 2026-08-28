@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+## [0.2.0-test.5] - 2026-08-28
+
+> **测试版本**（分支 `test1`，tag `v0.2.0-test.5`）。  
+> 其他项目：`cursor-std install <目标> --version 0.2.0-test.5`
+
+### Added
+- `std-readability.mdc`：新增「先早退，再计算」——Guard 优先、声明靠近使用点，禁止早退前多余计算。
+
 ## [0.2.0-test.4] - 2026-08-27
 
 > **测试版本**（分支 `test1`，tag `v0.2.0-test.4`）。  

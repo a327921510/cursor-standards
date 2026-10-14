@@ -31,7 +31,7 @@ description: >-
 
 - REQ-ID、类型、端、台账/详情路径
 - 验收句摘要
-- 提醒：下一步说「按 REQ-xxx 实现」进入 `implement-req`
+- 提醒：下一步说「按 REQ-xxx 实现」进入 `implement-req`；主路径定稿后可说「补 E2E」进入 `add-e2e-test`
 
 ## 禁止
 

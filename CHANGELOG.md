@@ -4,7 +4,64 @@
 
 ## [Unreleased]
 
+### Changed
+- `std-comments.mdc`：新增「语言（注释 + 日志）」专节——给人读的中文、机器键可英文；覆盖 `console` / `logger` / `print` message；补红线与正反例。
+- `std-general.mdc`：总则增加注释/日志 message 默认中文，交叉引用 `std-comments`。
+
+## [0.2.0-test.5] - 2026-08-28
+
+> **测试版本**（分支 `test1`，tag `v0.2.0-test.5`）。  
+> 其他项目：`cursor-std install <目标> --version 0.2.0-test.5`
+
 ### Added
+- `std-readability.mdc`：新增「先早退，再计算」——Guard 优先、声明靠近使用点，禁止早退前多余计算。
+
+## [0.2.0-test.4] - 2026-08-27
+
+> **测试版本**（分支 `test1`，tag `v0.2.0-test.4`）。  
+> 其他项目：`cursor-std install <目标> --version 0.2.0-test.4`
+
+### Added
+- `std-typescript.mdc`：数据转换 export 命名收敛为 `map*` / `format*` / `parse*`（含子场景与排除项）。
+
+### Changed
+- `std-comments.mdc`：重构为表格化结构；数据转换注释要求（`例：入参 → 出参`）与命名规范分离，交叉引用 `std-typescript`。
+
+## [0.2.0-test.3] - 2026-08-26
+
+> **测试版本**（分支 `test1`，tag `v0.2.0-test.3`）。  
+> 其他项目：`cursor-std install <目标> --version 0.2.0-test.3`
+
+### Added
+- Skill `add-e2e-test`：主路径定稿后按 stage 补页面 E2E / `data-testid`；含**小程序自动化占位**（不生成驱动）。
+- `std-typescript.mdc`：单测与 E2E / testid / 小程序占位约定。
+- REQ 模板「自动化」表；`使用指南` §5.2.1；smoke 校验 `add-e2e-test`。
+
+### Changed
+- `implement-req`：自动化两档（未定禁铺 / 定稿可补）；简报含 E2E、小程序、单测状态。
+- `req-workflow` / `WORKFLOW.md`：步骤 ②′ 与口令「主路径已定，补 E2E」；区分 E2E vs 人工详测。
+- `std-req-workflow` / `std-comments` / `sync-req-docs`：与上述对齐。
+
+## [0.2.0-test.2] - 2026-08-24
+
+> **测试版本**（分支 `test1`，tag `v0.2.0-test.2`）。  
+> 其他项目：`cursor-std install <目标> --version 0.2.0-test.2`
+
+### Changed
+- 流程地图相关文案去业务化：去掉支付/弹层/登录等项目向举例，改为语言无关表述；示例改为通用「提交导出任务」流水线。
+
+## [0.2.0-test.1] - 2026-08-24
+
+> **测试版本**（分支 `test1`，tag `v0.2.0-test.1`）。首个公开发布的 git tag；正式版号可能仍调整。  
+> 其他项目安装：`cursor-std install <目标> --version 0.2.0-test.1`（需本地 standards 源已 `git fetch --tags`）。
+
+### Changed
+- `std-readability.mdc`：新增「主流程可扫读」——唯一编排入口、流程地图（stage 1→N）、stage 命名约定；弹层/overlay 同样要薄入口；禁止为测试硬拆函数。
+- `std-comments.mdc`：编排入口须写流程地图；主流程用 `// --- stageName ---` 分段（与地图/日志同名）；补支付示例。
+- `implement-req`：实现主路径时补流程地图；结束简报强制含入口路径、stage 表、新增文件数、调用深度。
+- `std-req-workflow.mdc`、`req-workflow` 口令模板 B：与上述简报字段对齐。
+
+### Added（随本 tag 一并首次发布，此前未打 tag）
 - **REQ 文档驱动工作流**（从业务项目工作流抽离的通用包）：
   - 规则 `std-req-workflow.mdc`（摘要，`alwaysApply`）。
   - Skills：`req-workflow`（总览 + `WORKFLOW.md` + backlog/changelog assets）、`req-register`、`implement-req`、`sync-req-docs`。

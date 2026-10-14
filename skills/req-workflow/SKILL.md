@@ -3,7 +3,7 @@ name: req-workflow
 description: >-
   REQ 文档驱动工作流总览：台账、分类、主流程、Cursor 口令与对话模板。
   触发词：工作流、REQ 工作流、口令速查、需求到上线、登记流程说明。
-  具体执行请用 req-register / implement-req / sync-req-docs。
+  具体执行请用 req-register / implement-req / add-e2e-test / sync-req-docs。
 ---
 
 # REQ 工作流（总览）
@@ -30,6 +30,7 @@ cursor-std configure-req /path/to/project \
 |----------|--------|
 | 登记 / 建 REQ / 只改台账不写码 | `req-register` |
 | 按 REQ 实现代码 | `implement-req` |
+| 主路径已定，补页面 E2E | `add-e2e-test` |
 | 代码已确认，同步文档 | `sync-req-docs` |
 
 ## 文档资产

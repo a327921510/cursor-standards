@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+## [0.2.0-test.6] - 2026-10-14
+
+> **测试版本**（`main` 已合并 `test1`，tag `v0.2.0-test.6`）。  
+> 其他项目：`cursor-std install <目标> --version 0.2.0-test.6`
+
 ### Changed
 - `std-comments.mdc`：新增「语言（注释 + 日志）」专节——给人读的中文、机器键可英文；覆盖 `console` / `logger` / `print` message；补红线与正反例。
 - `std-general.mdc`：总则增加注释/日志 message 默认中文，交叉引用 `std-comments`。

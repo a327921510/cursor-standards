@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-28
+
+> tag `v0.3.0`。其他项目：`cursor-std install <目标> --version 0.3.0`
+
 ### Added
 - `std-admin-ux.mdc`：管理后台交互基线——防重复提交与确认按钮 loading、危险操作二次确认、提交校验、弹窗重置/禁遮罩关闭、批量选中校验、写后分页策略、筛选 Enter/`trim`、loading/空态分型、操作列固定与长文本省略。
 - `catalogs/admin-ux-options.md`：可选 Admin UX 目录（B 剩余 / C / D）；始终从中央源读取。

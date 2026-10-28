@@ -56,6 +56,7 @@ cursor-standards/
 ├── bin/cursor-std         # CLI 入口
 ├── lib/                   # install / check / update / verify / init / common
 ├── rules/                 # 下发的 .mdc 规则（统一 std- 前缀）
+├── catalogs/              # 可选规范目录（如 admin-ux；不随 install 拷贝，CLI 读中央源）
 ├── skills/                # 下发的 SKILL.md 技能（含 REQ 工作流）
 ├── templates/             # hooks + req-workflow.local.mdc.tpl
 ├── tests/                 # 冒烟测试（纯 bash）

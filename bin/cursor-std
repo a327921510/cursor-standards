@@ -37,6 +37,8 @@ COMMANDS:
   remove        [target]   Uninstall: delete managed subtrees + lock (keeps local.mdc & hooks)
   init          [target]   install + wire the sessionStart upgrade-reminder hook (non-destructive)
   configure-req [target]   Write REQ workflow local paths (.cursor/rules/req-workflow.local.mdc)
+  configure-admin-ux [target]
+                           Seed/generate project Admin UX optional rules from central catalog
   version                  Print CLI and standards versions
   help                     Show this help
 
@@ -55,6 +57,11 @@ OPTIONS (configure-req):
   --seed-docs                Copy backlog/changelog stubs into doc-root (skip if exists)
   --force                    Overwrite existing req-workflow.local.mdc
 
+OPTIONS (configure-admin-ux):
+  --seed                     Write .cursor/admin-ux.select.md checklist from central catalog
+  --force                    With --seed: overwrite existing checklist
+  (default)                 Read checklist + STANDARDS_HOME catalog → admin-ux.local.mdc
+
 ENVIRONMENT:
   STANDARDS_HOME     Path to a local cursor-standards clone (enables offline use)
   STANDARDS_REPO     Remote URL used by 'check' when no lock/source is available
@@ -67,6 +74,9 @@ EXAMPLES:
     --repo app=/path/to/app \\
     --repo boss=/path/to/boss \\
     --seed-docs
+  cursor-std configure-admin-ux /path/to/my-app --seed   # checklist
+  # edit .cursor/admin-ux.select.md then:
+  cursor-std configure-admin-ux /path/to/my-app          # generate local rule
   cursor-std check   /path/to/my-app        # exit 1 if a newer version exists
   cursor-std update  /path/to/my-app
   cursor-std install /path/to/my-app --version 1.2.0
@@ -84,7 +94,7 @@ cmd_version() {
 # --- argument parsing -------------------------------------------------------
 OPT_SOURCE=""; OPT_VERSION=""; OPT_COMMIT=""; OPT_MODE="copy"; OPT_GLOBAL=0
 OPT_DOC_ROOT=""; OPT_FEATURE_DOC=""; OPT_CHANGELOG=""
-OPT_SEED_DOCS=0; OPT_FORCE=0
+OPT_SEED_DOCS=0; OPT_SEED=0; OPT_FORCE=0
 OPT_REPOS=()
 POSITIONAL=()
 
@@ -111,6 +121,7 @@ while [ $# -gt 0 ]; do
     --changelog)  OPT_CHANGELOG="${2:-}"; shift 2 ;;
     --changelog=*) OPT_CHANGELOG="${1#*=}"; shift ;;
     --seed-docs) OPT_SEED_DOCS=1; shift ;;
+    --seed) OPT_SEED=1; shift ;;
     --force) OPT_FORCE=1; shift ;;
     -h|--help) usage; exit 0 ;;
     --) shift; while [ $# -gt 0 ]; do POSITIONAL+=("$1"); shift; done ;;
@@ -119,7 +130,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 export OPT_SOURCE OPT_VERSION OPT_COMMIT OPT_MODE OPT_GLOBAL CURSOR_STD_SELF_ROOT
-export OPT_DOC_ROOT OPT_FEATURE_DOC OPT_CHANGELOG OPT_SEED_DOCS OPT_FORCE
+export OPT_DOC_ROOT OPT_FEATURE_DOC OPT_CHANGELOG OPT_SEED_DOCS OPT_SEED OPT_FORCE
 # OPT_REPOS is an array — export does not preserve arrays; configure-req reads it in-process.
 
 # --global rewrites the target to $HOME (unless one was given explicitly).
@@ -136,6 +147,7 @@ case "$COMMAND" in
   remove)  . "$LIB_DIR/remove.sh";  cmd_remove  "${target_arg:-.}" ;;
   init)    . "$LIB_DIR/install.sh"; . "$LIB_DIR/init.sh"; cmd_init "${target_arg:-.}" ;;
   configure-req) . "$LIB_DIR/configure-req.sh"; cmd_configure_req "${target_arg:-.}" ;;
+  configure-admin-ux) . "$LIB_DIR/configure-admin-ux.sh"; cmd_configure_admin_ux "${target_arg:-.}" ;;
   version|--version) cmd_version ;;
   help|-h|--help) usage ;;
   *) err "unknown command: $COMMAND"; usage; exit 2 ;;

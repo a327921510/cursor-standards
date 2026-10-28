@@ -84,6 +84,43 @@ check "configure-req --force works"      "[ -f '$PROJ/.cursor/rules/req-workflow
 check "req-workflow.local.mdc kept on remove" "[ -f '$PROJ/.cursor/rules/req-workflow.local.mdc' ]"
 "$CLI" install "$PROJ" >/dev/null 2>&1
 
+echo "== configure-admin-ux =="
+"$CLI" configure-admin-ux "$PROJ" --seed >/dev/null 2>&1
+check "admin-ux.select.md seeded" "[ -f '$PROJ/.cursor/admin-ux.select.md' ]"
+# enable a flag + a choice, then generate
+# portable in-place edit: rewrite two lines via sed
+sed -i.bak -e 's/^- \[ \] B1 /- [x] B1 /' -e 's/^- \[ \] C2=click-search/- [x] C2=click-search/' \
+  "$PROJ/.cursor/admin-ux.select.md"
+rm -f "$PROJ/.cursor/admin-ux.select.md.bak"
+"$CLI" configure-admin-ux "$PROJ" >/dev/null 2>&1
+check "admin-ux.local.mdc generated" "[ -f '$PROJ/.cursor/rules/admin-ux.local.mdc' ]"
+check "generated includes B1" "grep -q '## B1' '$PROJ/.cursor/rules/admin-ux.local.mdc'"
+check "generated includes C2" "grep -q '## C2' '$PROJ/.cursor/rules/admin-ux.local.mdc'"
+"$CLI" install "$PROJ" >/dev/null 2>&1
+check "admin-ux.local.mdc survives reinstall" "[ -f '$PROJ/.cursor/rules/admin-ux.local.mdc' ]"
+check "admin-ux.select.md survives reinstall" "[ -f '$PROJ/.cursor/admin-ux.select.md' ]"
+if "$CLI" configure-admin-ux "$PROJ" --seed >/dev/null 2>&1; then
+  tfail "configure-admin-ux --seed should refuse overwrite without --force"
+else
+  tpass "configure-admin-ux --seed refuses overwrite without --force"
+fi
+# invalid choice should fail
+printf -- '- [x] C2=not-a-choice\n' > "$PROJ/.cursor/admin-ux.select.md"
+if "$CLI" configure-admin-ux "$PROJ" >/dev/null 2>&1; then
+  tfail "configure-admin-ux should reject invalid choice"
+else
+  tpass "configure-admin-ux rejects invalid choice"
+fi
+# restore valid select + mdc for remove check
+"$CLI" configure-admin-ux "$PROJ" --seed --force >/dev/null 2>&1
+sed -i.bak -e 's/^- \[ \] B1 /- [x] B1 /' "$PROJ/.cursor/admin-ux.select.md"
+rm -f "$PROJ/.cursor/admin-ux.select.md.bak"
+"$CLI" configure-admin-ux "$PROJ" >/dev/null 2>&1
+"$CLI" remove "$PROJ" >/dev/null 2>&1
+check "admin-ux.local.mdc kept on remove" "[ -f '$PROJ/.cursor/rules/admin-ux.local.mdc' ]"
+check "admin-ux.select.md kept on remove" "[ -f '$PROJ/.cursor/admin-ux.select.md' ]"
+"$CLI" install "$PROJ" >/dev/null 2>&1
+
 echo "== pin by tag (if any tag exists) =="
 if git -C "$REPO_ROOT" describe --tags --abbrev=0 >/dev/null 2>&1; then
   TAG="$(git -C "$REPO_ROOT" describe --tags --abbrev=0)"

@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-11-05
+
+> tag `v0.3.1`。其他项目：`cursor-std install <目标> --version 0.3.1`
+
+### Changed
+- `std-admin-ux.mdc`：数值单位展示升为基线（必做，不可勾选取消）；编辑在控件旁、详情在 label、列表与详情一致、无量纲可免；控件库写法仍由项目 `local.mdc` 补充。
+- `std-admin-ux.mdc`：新增「表单写法」——① 统一完整绑定禁止简写；② 结构具备校验/重置能力（查询可不挂 rules，禁止空规则凑结构）；③ 按字段语义选控件。
+- `catalogs/admin-ux-options.md`：数值单位不再作为可选勾选（已升基线）。
+
 ## [0.3.0] - 2026-10-28
 
 > tag `v0.3.0`。其他项目：`cursor-std install <目标> --version 0.3.0`

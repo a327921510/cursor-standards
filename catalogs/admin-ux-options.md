@@ -2,6 +2,7 @@
 
 > **基线**（必做）见 `rules/std-admin-ux.mdc`，不在本目录重复。  
 > 本文件由 `cursor-std configure-admin-ux` 读取（`$STANDARDS_HOME` / `--source`），按项目勾选生成 `.cursor/rules/admin-ux.local.mdc`。  
+> 章节：B 推荐约定 · C 项目习惯 · D 权限与请求。数值单位展示已升格为基线（`std-admin-ux`），不在此勾选。  
 > 新增规范：追加条目即可；升格为基线时移入 `std-admin-ux` 并从此处删除或标废弃。
 
 机器可读约定：

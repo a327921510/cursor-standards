@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-11-05
+
+> tag `v0.3.2`。其他项目：`cursor-std install <目标> --version 0.3.2`
+
+### Changed
+- `catalogs/admin-ux-options.md`：文首标明表单写法/语义控件/数值单位已升基线；C7 收窄为「日期可选范围限制」；C4/C5 补充与基线关系说明。
+
 ## [0.3.1] - 2026-11-05
 
 > tag `v0.3.1`。其他项目：`cursor-std install <目标> --version 0.3.1`
